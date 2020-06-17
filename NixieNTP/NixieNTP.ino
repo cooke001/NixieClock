@@ -11,7 +11,7 @@ const char *password = myPASSWORD;
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0);
-int z;
+int z,dst;
 
 void clockPrint(int val, int mask, int DST){
   int d = (val/1000)%10;
@@ -56,6 +56,7 @@ void clockPrint(int val, int mask, int DST){
 }
 
 void setup(){
+  pinMode(3,INPUT);
   Serial.begin(115200);
   WiFi.begin(ssid, password);
   while ( WiFi.status() != WL_CONNECTED ) {
@@ -64,11 +65,12 @@ void setup(){
   }
   timeClient.begin();
   Wire.begin(D1, D2);
+  dst = digitalRead(3);
 }
 
 void loop() {
   timeClient.update();
   z = 100*timeClient.getHours()+timeClient.getMinutes(); 
-  clockPrint(z,0,1);
+  clockPrint(z,0,dst);
   delay(1000);
 }
