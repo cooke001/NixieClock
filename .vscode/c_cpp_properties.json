@@ -4,7 +4,10 @@
             "name": "Mac",
             "includePath": [
                 "/Users/cooke/Library/Arduino15/packages/esp8266/tools/**",
-                "/Users/cooke/Library/Arduino15/packages/esp8266/hardware/esp8266/2.3.0/**"
+                "/Users/cooke/Library/Arduino15/packages/esp8266/hardware/esp8266/2.3.0/**",
+                "/Users/cooke/Library/Arduino15/packages/esp8266/hardware/esp8266/2.3.0/Libraries/Wire/**",
+                "/Users/cooke/Library/Arduino15/packages/**",
+                "/Users/cooke/Library/Arduino15/**"
             ],
             "forcedInclude": [],
             "macFrameworkPath": [
