@@ -56,7 +56,7 @@ void clockPrint(int val, int mask, int DST){
 }
 
 void setup(){
-  pinMode(3,INPUT);
+  pinMode(16,INPUT);
   Serial.begin(115200);
   WiFi.begin(ssid, password);
   while ( WiFi.status() != WL_CONNECTED ) {
@@ -65,12 +65,13 @@ void setup(){
   }
   timeClient.begin();
   Wire.begin(D1, D2);
-  dst = digitalRead(3);
+  
 }
 
 void loop() {
   timeClient.update();
   z = 100*timeClient.getHours()+timeClient.getMinutes(); 
+  dst = digitalRead(16);
   clockPrint(z,0,dst);
   delay(1000);
 }
