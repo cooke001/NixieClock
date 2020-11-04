@@ -4,14 +4,18 @@
 #include <NTPClient.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
+#include <ESP8266mDNS.h>
+#include <ESP8266WebServer.h>
 #include "config.h"
 
+ESP8266WebServer Webserver(80);
 const char *ssid = mySSID;
 const char *password = myPASSWORD;
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0);
 int z,dst;
+String HTMLpage = "";
 
 void clockPrint(int val, int mask, int DST){
   int d = (val/1000)%10;
@@ -56,22 +60,37 @@ void clockPrint(int val, int mask, int DST){
 }
 
 void setup(){
-  pinMode(16,INPUT);
+  HTMLpage += "<head><title>Nixie Clock</title></head><p><a href=\"DSTON\"><button>SUMMER</button></a>&nbsp;<a href=\"DSTOFF\"><button>WINTER</button></a></p>";
   Serial.begin(115200);
   WiFi.begin(ssid, password);
   while ( WiFi.status() != WL_CONNECTED ) {
     delay ( 500 );
     Serial.print ( "." );
   }
+  Serial.println("WiFi connected");
+  MDNS.begin("nixie");
   timeClient.begin();
   Wire.begin(D1, D2);
-  
+  Webserver.on("/", [](){
+    Webserver.send(200, "text/html", HTMLpage);
+  });
+  Webserver.on("/DSTON", [](){
+    Webserver.send(200, "text/html", HTMLpage+"<p>GET THE SUNCREAM AND PIMMS OUT, YOU SLAG</p>");
+    dst = 1;
+  });
+  Webserver.on("/DSTOFF", [](){
+    Webserver.send(200, "text/html", HTMLpage+"<p>HOPE YOU FREEZE YOUR BALLS OFF, YOU WINTER SLAG</p>");
+    dst = 0;
+  });
+ 
+  Webserver.begin();
+  Serial.println("HTTP Webserver started");
 }
 
 void loop() {
   timeClient.update();
   z = 100*timeClient.getHours()+timeClient.getMinutes(); 
-  dst = digitalRead(16);
+  Webserver.handleClient();
   clockPrint(z,0,dst);
   delay(1000);
 }
