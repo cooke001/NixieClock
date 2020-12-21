@@ -1,5 +1,6 @@
 //settings - NodeMCU 1.0 (ESP-12E Module), 115200, 80MHz
-
+#include <DS3231.h>
+DS3231 Clock;
 #include <Wire.h>
 #include <NTPClient.h>
 #include <ESP8266WiFi.h>
@@ -7,6 +8,7 @@
 #include <ESP8266mDNS.h>
 #include <ESP8266WebServer.h>
 #include "config.h"
+RTClib RTC;
 
 ESP8266WebServer Webserver(80);
 const char *ssid = mySSID;
@@ -14,7 +16,7 @@ const char *password = myPASSWORD;
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0);
-int z,dst;
+int z,dst,r;
 String HTMLpage = "";
 
 void clockPrint(int val, int mask, int DST){
@@ -82,15 +84,26 @@ void setup(){
     Webserver.send(200, "text/html", HTMLpage+"<p>HOPE YOU FREEZE YOUR BALLS OFF, YOU WINTER SLAG</p>");
     dst = 0;
   });
- 
   Webserver.begin();
   Serial.println("HTTP Webserver started");
+  Clock.setClockMode(false);
+  Serial.println("clockStarted");
+  timeClient.update();
+  r=600;
 }
 
 void loop() {
-  timeClient.update();
-  z = 100*timeClient.getHours()+timeClient.getMinutes(); 
+  if(r==600){
+    r=0;
+    timeClient.update();
+    Clock.setHour(timeClient.getHours());
+    Clock.setMinute(timeClient.getMinutes());
+    Clock.setSecond(timeClient.getSeconds());
+  }
+  DateTime now = RTC.now();
+  z = 100*now.hour()+now.minute();
   Webserver.handleClient();
   clockPrint(z,0,dst);
   delay(1000);
+  r++;
 }
