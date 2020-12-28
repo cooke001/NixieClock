@@ -93,6 +93,11 @@ void setup(){
 }
 
 void loop() {
+  while(0){
+    clockPrint(z,0,dst);
+    z = random(0,9999);
+    delay(100);
+  }
   if(r==600){
     r=0;
     timeClient.update();
