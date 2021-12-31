@@ -77,11 +77,11 @@ void setup(){
     Webserver.send(200, "text/html", HTMLpage);
   });
   Webserver.on("/DSTON", [](){
-    Webserver.send(200, "text/html", HTMLpage+"<p>GET THE SUNCREAM AND PIMMS OUT, YOU SLAG</p>");
+    Webserver.send(200, "text/html", HTMLpage+"<p>GET THE SUNCREAM AND PIMMS OUT</p>");
     dst = 1;
   });
   Webserver.on("/DSTOFF", [](){
-    Webserver.send(200, "text/html", HTMLpage+"<p>HOPE YOU FREEZE YOUR BALLS OFF, YOU WINTER SLAG</p>");
+    Webserver.send(200, "text/html", HTMLpage+"<p>HOPE YOU FREEZE</p>");
     dst = 0;
   });
   Webserver.begin();
