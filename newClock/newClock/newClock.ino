@@ -22,52 +22,35 @@ int r;
 String HTMLpage = "";
 
 void clockPrint(int val, int mask, int DST){
-  int f = (val/100000)%10;
-  int e = (val/10000)%10;
-  int d = (val/1000)%10;
-  int c = (val/100)%10;
-  int b = (val/10)%10;
-  int a = (val)%10;
-  if(DST){
-    e++;
-    if((f==0) && (e==10)){
-     e=0;
-     f=1;
-    }    
-    if((f==1) && (e==10)){
-     e=0;
-     f=2;
-    }    
-    if((f==2) && (e==4)){
-     e=0;
-     f=0;
-    }
-  }
-  Serial.print(f);
-  Serial.print(e);
-  Serial.print(d);
-  Serial.print(c);
-  Serial.print(b);
-  Serial.println(a);
-  f=(10-f)%10;
-  e=(10-e)%10;
-  d=(10-d)%10;
-  c=(10-c)%10;
-  b=(10-b)%10;
-  a=(10-a)%10;
-  byte y = 16*e+f;
-  byte x = 16*c+d;
-  byte m = 16*a+b;
-  Wire.beginTransmission(0x38);
-  Wire.write(y);
-  Wire.endTransmission();
-  Wire.beginTransmission(0x39);
-  Wire.write(x);
-  Wire.endTransmission();  
+  int n = (10-(val/100000)%10)%10;
+  int o = (10-(val/10000)%10)%10;
+  int d = (10-(val/1000)%10)%10;
+  int c = (10-(val/100)%10)%10;
+  int b = (10-(val/10)%10)%10;
+  int a = (10-(val)%10)%10;
+  byte e = 16*a+b;
+  byte f = 16*c+d;
+  byte p = 16*o+n;
+  
+  byte l = 16*b+a;
+  byte m = 16*d+c;
+  int k = m*16*16+l;
+  Serial.println(k, HEX);
+  int g = (mask/1000)%10;
+  int h = (mask/100)%10;
+  int i = (mask/10)%10;
+  int j = (mask)%10;
+  
   Wire.beginTransmission(0x3A);
-  Wire.write(m);
+  Wire.write(e);
   Wire.endTransmission();  
-
+  Wire.beginTransmission(0x39);
+  Wire.write(f);
+  Wire.endTransmission();  
+  Wire.beginTransmission(0x38);
+  Wire.write(p);
+  Wire.endTransmission();
+  
 }
 
 void setup(){
@@ -115,9 +98,18 @@ void loop() {
     Serial.println(timeClient.getSeconds());
   }
   DateTime now = RTC.now();
-  z = 10000*now.hour()+100*now.minute()+now.second();
-  
-  //Serial.println(z);
+  //z = 10000*now.hour()+100*now.minute()+now.second();
+  int x = 0;
+  while(1){
+    z = x;
+    x=x+111111;
+    
+    clockPrint(z,0,dst);
+    if(z>=999999){
+      x=0;
+    }
+    delay(1000);
+  }
   
   Webserver.handleClient();
   clockPrint(z,0,dst);
